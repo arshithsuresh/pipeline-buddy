@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="PipelineBuddyView.Components.JobWatchList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PipelineBuddyView.Components"
+             xmlns:control = "clr-namespace:PipelineBuddyView.Components" 
+             mc:Ignorable="d" d:DesignWidth="348" Height="44" 
+               x:Name="Me"
+             >
+    <StackPanel Margin="0,0,-3,0" MaxWidth="352" CanHorizontallyScroll="True" >
+        <WrapPanel HorizontalAlignment="Center" MouseDown="WrapPanel_MouseDown">
+            <Border CornerRadius="14" BorderThickness="1" Background="#CC000000" RenderTransformOrigin="0.5,0.5" Height="28" Padding="0,0,4,0" >
+                <Border.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform AngleX="0.868"/>
+                        <RotateTransform/>
+                        <TranslateTransform X="0.152"/>
+                    </TransformGroup>
+                </Border.RenderTransform>
+                <Grid >
+                    <StackPanel   Name="WatchList" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,-4,0" >
+                        <StackPanel.Resources>
+                            <Style TargetType="{x:Type control:WatchListButton}">
+                                <Setter Property="Margin" Value="0,0,4,0"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        
+                        
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </WrapPanel>
+        <Border Visibility="Hidden" CornerRadius="7" Width="259" HorizontalAlignment="Center" VerticalAlignment="Center" Background="#4C060606">
+            <Label Padding="0,0,0,0" HorizontalContentAlignment="Center" Width="260" FontSize="10" Height="14" VerticalAlignment="Center" HorizontalAlignment="Left" VerticalContentAlignment="Center"  Foreground="White" FontWeight="Bold" Background="{x:Null}">
+                <Label.ToolTip>Job Name</Label.ToolTip>
+                <Label.Content>
+                    Jenkins Job Name
+                </Label.Content>
+            </Label>
+        </Border>
+    </StackPanel>
+
+</UserControl>
