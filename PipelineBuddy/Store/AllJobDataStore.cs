@@ -1,5 +1,6 @@
 ﻿using Contracts.Models;
 using PipelineBuddy;
+using PipelineBuddy.Copy;
 using PipelineBuddy.Models;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,17 @@ namespace PipelineBuddyView.Store
         public ObservableCollection<JobStorageModel> Jobs;
         public ObservableCollection<int> WatchListedJobs;
 
+        public event Action CurrentJobChanged;
+        public event Action WatchListChanged;
+
         public AllJobDataStore()
         {
             _selectedJobDataStore = App.GetService<SelectedJobDataStore>(); 
+
             Jobs = new ObservableCollection<JobStorageModel>();
             WatchListedJobs = new ObservableCollection<int>();
         }
-
+         
         
         public int currentJobIndex  { 
             get{ return _currentJobIndex; }
@@ -45,6 +50,7 @@ namespace PipelineBuddyView.Store
             }
         }
 
+        // TODO Refactor
         public void UpdateCurrentSelectedJob() {
             if (Jobs.Count <= 0) {
                 _selectedJobDataStore.SelectedJob = null;
@@ -74,6 +80,7 @@ namespace PipelineBuddyView.Store
 
             if (_selectedJobDataStore.SelectedJob == null)
             {
+                _currentJobIndex++;
                 _selectedJobDataStore.SelectedJob = Jobs[0].jobData;
             }
             updateLastUpdated();
@@ -121,7 +128,7 @@ namespace PipelineBuddyView.Store
         public void UpdateJob(int index, JobDataModel data)
         {
             Trace.WriteLine($"Job Data Changed to  {data.displayName},{ data.latestRun.result} ");
-            Jobs[index].jobData = data;            
+            Jobs[index].jobData.UpdateFrom(data);            
             CurrentJobChanged?.Invoke();
         }
         public void UpdateCurrentJob(JobDataModel data)
@@ -136,6 +143,5 @@ namespace PipelineBuddyView.Store
             CurrentJobChanged?.Invoke();
         }
 
-        public event Action CurrentJobChanged;
     }
 }

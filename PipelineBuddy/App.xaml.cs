@@ -54,7 +54,7 @@ namespace PipelineBuddy
             
             var service = AppHost!.Services.GetService<T>();
             if(service == null) 
-            { 
+            {                
                 throw new Exception("No Service found "+ nameof(T));
             }
             return service;
@@ -81,13 +81,17 @@ namespace PipelineBuddy
             
             services.AddSingleton<MainViewModel>();
 
+            services.AddSingleton<IPRLogger, FileLogger>();
+
         }
 
         protected override async void OnStartup(StartupEventArgs e)
         {
             await AppHost!.StartAsync();
+            var logger = GetService<IPRLogger>();
             var mainWindow = GetService<MainWindow>();
-            
+            logger.Info("Initializing PR Buddy...");
+
             var location = new Point(5, 5);
             var width = System.Windows.SystemParameters.WorkArea.Width;
             mainWindow.Left = width - mainWindow.Width - location.X;
@@ -96,13 +100,16 @@ namespace PipelineBuddy
             if (mainWindow != null) 
                 mainWindow.Show();
 
+            logger.Info("Starting PR Buddy...");
+
             base.OnStartup(e);
         }
 
 
         protected override async void OnExit(ExitEventArgs e)
         {
-            Trace.WriteLine("Applicaiton Exited!");
+            var logger = GetService<IPRLogger>();
+            logger.Info("PR Buddy Existing...");
             await AppHost!.StopAsync();
             base.OnExit(e);
         }

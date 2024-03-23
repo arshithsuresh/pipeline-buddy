@@ -66,7 +66,16 @@ namespace PipelineBuddyView.Views
                 return;
             }
 
-            viewModel.AddNewJob(jobID, orgName);
+            var nickName = txtNickname.Text.Trim();
+
+            if (nickName.Length > 0)
+            {
+                viewModel.AddNewJob(jobID, orgName, nickName);
+            }
+            else
+            {
+                viewModel.AddNewJob(jobID, orgName);
+            }
             Close();
 
         }

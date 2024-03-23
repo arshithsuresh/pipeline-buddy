@@ -38,6 +38,16 @@ namespace PipelineBuddyView.ViewModel
             _allJobDataStore.AddNewJob(jobStorageEntry);
         }
 
+        public void AddNewJob(string jobId, string organization, string nickName)
+        {
+            var jobData = new JobDataModel(jobId, nickName);
+            var jobStorageEntry = new JobStorageModel(DateTime.Now, _configService.currentConfig.username, organization, jobId, jobData);
+
+            _allJobDataStore.AddNewJob(jobStorageEntry);
+
+
+        }
+
         private void Initialize()
         {
             var orgs = _configService.getOrganizations();

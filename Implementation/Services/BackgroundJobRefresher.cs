@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using PipelineBuddy.Services;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Implementation.Services
 {
@@ -16,10 +17,12 @@ namespace Implementation.Services
         public int TimerRefresh { get => _TimerRefresh; set => _TimerRefresh = value; }
         public Timer saveTimer { get => _timer; }
 
+        private readonly IPRLogger _logger;
 
-        public BackgroundJobRefresher(IConfiguration appSettings, IJobDataService jobDataService)
+        public BackgroundJobRefresher(IConfiguration appSettings, IJobDataService jobDataService, IPRLogger logger)
         {
 
+            _logger = logger;
             TimerRefresh = int.Parse(appSettings.GetSection("checkTimer").Value!);
             JobRefreshInterval = int.Parse(appSettings.GetSection("jobRefreshInterval").Value!);
 
@@ -28,7 +31,10 @@ namespace Implementation.Services
         }
 
         public bool UpdateJobPredicate(DateTime jobLastUpdated) {
-           return DateTime.Now - jobLastUpdated >= TimeSpan.FromMilliseconds(JobRefreshInterval);           
+            _logger.Info($"Checking for new job update ");
+            TimeSpan elapsedTimer = DateTime.Now - jobLastUpdated;
+            TimeSpan refreshTimer = TimeSpan.FromMilliseconds(JobRefreshInterval);
+           return elapsedTimer >= refreshTimer;           
         }
         public void PauseTimer()
         {

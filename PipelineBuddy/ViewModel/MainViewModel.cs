@@ -1,5 +1,4 @@
 ﻿using Contracts.Models;
-using Implementation.Services;
 using PipelineBuddy;
 using PipelineBuddy.Commands;
 using PipelineBuddy.Commands.ViewModel;
@@ -7,14 +6,10 @@ using PipelineBuddy.Models;
 using PipelineBuddy.Services;
 using PipelineBuddyView.Store;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -29,16 +24,16 @@ namespace PipelineBuddyView.ViewModel
         private IBackgroundJobRefresher _jobRefresher;
 
         private bool isFetching = false;
-       
+
         public int currentJobDataIndex
         {
             get { return _allJobStore.currentJobIndex; }
-            set { 
+            set
+            {
                 _allJobStore.currentJobIndex = value;
-                // UpdateJobData(_allJobStore.Jobs[_allJobStore.currentJobIndex].name);
             }
         }
-        public ObservableCollection<JobStorageModel> Jobs { get { return _allJobStore.Jobs; } }
+        public ObservableCollection<JobStorageModel> Jobs => _allJobStore.Jobs;
         public ConfigModel config { get; set; }
 
         public ICommand ShowWindowCommand { get; set; }
@@ -48,10 +43,10 @@ namespace PipelineBuddyView.ViewModel
             get
             {
                 if (_selectedJobStore.SelectedJob != null)
-                    return _selectedJobStore.SelectedJob.fullName;
+                    return _selectedJobStore.SelectedJob.nickName;
                 else
                     return "No jobs found!";
-            }           
+            }
         }
 
         public string currentJobColor
@@ -69,18 +64,22 @@ namespace PipelineBuddyView.ViewModel
                 {
                     return "#C5D0D8";
                 }
-                
+
             }
         }
 
         public FetchJobDetailsCommand FetchJobCommand { get; set; }
 
-        public Visibility refreshBtnVisible { get {
-                if(_selectedJobStore.SelectedJob != null)
+        public Visibility refreshBtnVisible
+        {
+            get
+            {
+                if (_selectedJobStore.SelectedJob != null)
                     return Visibility.Visible;
 
                 return Visibility.Hidden;
-            } }
+            }
+        }
 
         public MainViewModel()
         {
@@ -101,7 +100,8 @@ namespace PipelineBuddyView.ViewModel
 
         private void Jobs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add) {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
+            {
                 var addedJob = e.NewItems[0] as JobStorageModel;
                 var addedIndex = e.NewStartingIndex;
 
@@ -114,7 +114,7 @@ namespace PipelineBuddyView.ViewModel
         private void InitWindow()
         {
             var collection = jobDataService.readJobDataFile();
-            _allJobStore.AddFromCollection(collection);           
+            _allJobStore.AddFromCollection(collection);
         }
 
         private void _allJobStore_CurrentJobChanged()
@@ -125,9 +125,9 @@ namespace PipelineBuddyView.ViewModel
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public void AddCurrentToWatchlist() 
+        public void AddCurrentToWatchlist()
         {
-            _allJobStore.AddToWatchList(_allJobStore.currentJobIndex);        
+            _allJobStore.AddToWatchList(_allJobStore.currentJobIndex);
         }
 
         public void RemoveCurrentFromWatchlist(int index)
@@ -150,16 +150,16 @@ namespace PipelineBuddyView.ViewModel
             JobDataModel updatedJob = await jobDataService.fetchJobData(jobId, organization);
             isFetching = false;
             _allJobStore.UpdateCurrentJob(updatedJob);
-            
+
         }
 
         public async Task UpdateJobData(int index)
         {
-            var toChange = _allJobStore.Jobs[index];            
-            JobDataModel updatedJob = await jobDataService.fetchJobData(toChange.jobId, toChange.organization);            
-            _allJobStore.UpdateJob(index,updatedJob);
+            var toChange = _allJobStore.Jobs[index];
+            JobDataModel updatedJob = await jobDataService.fetchJobData(toChange.jobId, toChange.organization);
+            _allJobStore.UpdateJob(index, updatedJob);
 
-            if(index == currentJobDataIndex)
+            if (index == currentJobDataIndex)
             {
                 _allJobStore.UpdateCurrentSelectedJob();
             }
@@ -190,22 +190,38 @@ namespace PipelineBuddyView.ViewModel
         protected void StartRefresherService()
         {
             _jobRefresher.callbackFunction = RefreshJobs;
-           _jobRefresher.StartService();
+            _jobRefresher.StartService();
         }
 
-        public async void  RefreshJobs(object? sender)
+        public void SaveCurrentJobs()
+        {
+            Trace.WriteLine("Svaing All Jobs");
+            jobDataService.createJobDataFile(_allJobStore.Jobs.ToList());
+        }
+
+        public void OpenGHE()
+        {
+            var gheLink = _allJobStore.Jobs[currentJobDataIndex].jobData.pullRequest.url;
+            System.Diagnostics.Process.Start(new ProcessStartInfo
+            {
+                FileName = gheLink,
+                UseShellExecute = true
+            });
+        }
+
+        public async void RefreshJobs(object? sender)
         {
             Trace.WriteLine($"Refreshing {Jobs.Count} jobs.");
-            for (int i =0; i<_allJobStore.Jobs.Count; i++)
-            { 
+            for (int i = 0; i < _allJobStore.Jobs.Count; i++)
+            {
                 var job = _allJobStore.Jobs[i];
-                if(_jobRefresher.UpdateJobPredicate(job.lastUpdated))
+                if (_jobRefresher.UpdateJobPredicate(job.lastUpdated))
                 {
                     // Update Job
                     await UpdateJobData(i);
                     // Random Delay
                     await Task.Delay(500);
-                    job.lastUpdated = DateTime.Now + TimeSpan.FromMilliseconds(_jobRefresher.TimerRefresh*i);
+                    job.lastUpdated = DateTime.Now + TimeSpan.FromMilliseconds(_jobRefresher.TimerRefresh * i);
                 }
             }
         }

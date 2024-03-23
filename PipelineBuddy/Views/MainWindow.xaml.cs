@@ -98,5 +98,16 @@ namespace PipelineBuddy
         {
             _viewModel.AddCurrentToWatchlist();
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _viewModel.SaveCurrentJobs();
+            base.OnClosed(e);
+        }
+
+        private void JobButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.OpenGHE();
+        }
     }
 }

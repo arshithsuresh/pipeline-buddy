@@ -14,21 +14,25 @@ namespace Implementation.Services
     public class ConfigService : IConfigService
     {
         readonly string configFileName;
+        private readonly IPRLogger _logger;
 
         ConfigModel _currentConfig;
 
         public ConfigModel currentConfig { get { return _currentConfig;  } }
 
-        public ConfigService(ConfigModel defaultConfig, IConfiguration configRoot) {
-            
+        public ConfigService(ConfigModel defaultConfig, IConfiguration configRoot, IPRLogger logger) {
+
+            _logger = logger;
             configFileName = configRoot.GetSection("config").Value;
             ArgumentNullException.ThrowIfNull(nameof (configFileName));
             if (checkIfConfigExits(configFileName))
             {
+                _logger.Info("Config File exits; Reading from file...");
                 _currentConfig = getConfigFromFile(configFileName);
             }
             else
             {
+                _logger.Info("No Config file found; Creating new config file...");
                 createNewConfigFile(configFileName, defaultConfig);
                 _currentConfig = defaultConfig;
             }

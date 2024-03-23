@@ -9,7 +9,7 @@
         xmlns:local="clr-namespace:PipelineBuddyView.Views"
         mc:Ignorable="d"     
         MouseDown="Window_MouseDown"
-        Title="AddNewJobWindow" Height="205" Width="212" AllowsTransparency="True" Foreground="{x:Null}">
+        Title="AddNewJobWindow" Height="304" Width="212" AllowsTransparency="True" Foreground="{x:Null}">
 
     <Border CornerRadius="10"  BorderThickness="2" Padding="6" Background="#CC000000">
         <Grid Margin="2,2,2,2">
@@ -19,12 +19,14 @@
             <ComboBox Name="OrgList" HorizontalAlignment="Center" Margin="0,99,0,0" VerticalAlignment="Top" Width="172"
                   SelectedValuePath="Key" DisplayMemberPath="Value" Height="28" BorderBrush="{x:Null}" 
                   />
-            <Border CornerRadius="4" Margin="129,150,10,4" Background="White">
+            <Border CornerRadius="4" Margin="129,252,10,4" Background="White">
                 <Button Name="Add" Click="Add_Click" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Center" Width="54" Height="26" Background="{x:Null}" Foreground="Black" BorderBrush="{x:Null}"/>
             </Border>
-            <Border CornerRadius="4" Margin="52,150,70,4" BorderBrush="White" BorderThickness="1">
+            <Border CornerRadius="4" Margin="52,252,70,4" BorderBrush="White" BorderThickness="1">
                 <Button Name="Cancel" Click="Cancel_Click" Content="Cancel" HorizontalAlignment="Center" VerticalAlignment="Center" Width="70" Height="26" Background="{x:Null}" RenderTransformOrigin="0.492,0.538" BorderBrush="{x:Null}" Foreground="White"/>
             </Border>
+            <Label Content="Nickname" HorizontalAlignment="Left" Margin="11,137,0,0" VerticalAlignment="Top" Width="120" Padding="0,5,5,5" Foreground="White"/>
+            <TextBox x:Name="txtNickname" HorizontalAlignment="Center" Margin="0,163,0,0" TextWrapping="Wrap" Text="PR-" ToolTip="eg: PR-123"  VerticalAlignment="Top" Width="172" Height="27" Background="White" FontFamily="Arial" VerticalContentAlignment="Center" BorderBrush="{x:Null}"/>
         </Grid>
     </Border>
 </Window>

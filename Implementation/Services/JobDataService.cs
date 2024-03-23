@@ -17,9 +17,11 @@ namespace Implementation.Services
         private IHttpService _httpService;
         private IConfigService _configService;
         private string jobDataFileName = "jobsList.json";
+        private readonly IPRLogger _logger;
 
-        public JobDataService(IHttpService httpService, IConfigService configService, IConfiguration configRoot)
-        {            
+        public JobDataService(IHttpService httpService, IConfigService configService, IConfiguration configRoot, IPRLogger logger)
+        {
+            _logger = logger;
             _httpService = httpService;
             _configService = configService;
             jobDataFileName = configRoot.GetSection("jobs").Value;
@@ -47,7 +49,13 @@ namespace Implementation.Services
         }
         public void createJobDataFile() {
             if (JobDataFileExits(jobDataFileName))
+            {
+                _logger.Info("Job list file exits; Reading jobs from list..");
                 return;
+            }
+
+            _logger.Info("No Job list found; Creating new job list...");
+
 
             var newJobData = new JobDataCollectionModel(DateTime.Now, new List<JobStorageModel>());           
             
